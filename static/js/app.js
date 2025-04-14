@@ -1106,7 +1106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 发送创建请求
                 const response = await fetch('/api/folders', {
                     method: 'POST',
-                headers: {
+                    headers: {
                     'Content-Type': 'application/json'
                     },
                 body: JSON.stringify({
@@ -1123,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 添加到本地数组
             folders.push(result);
-                    renderFolderTree();
+                        renderFolderTree();
                         
             // 如果是在当前文件夹中创建的，则刷新文件列表
             if (parentFolderId === currentFolderId) {
@@ -1131,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             showToast(`文件夹 "${folderName}" 创建成功`, 'success');
-        } catch (error) {
+            } catch (error) {
             console.error('创建文件夹失败:', error);
             showToast(`创建文件夹失败: ${error.message}`, 'error');
             }
@@ -1746,7 +1746,26 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 渲染文件夹树和文件列表
             renderFolderTree();
-                    renderFileList();
+            renderFileList();
+            
+            // 展开根文件夹（我的文件夹）
+            setTimeout(() => {
+                const rootFolder = document.querySelector('.folder-item[data-folder-id="root"]');
+                if (rootFolder) {
+                    const toggleIcon = rootFolder.querySelector('.folder-toggle');
+                    const folderIcon = rootFolder.querySelector('.fa-folder');
+                    const subfolderList = rootFolder.querySelector('.subfolder-list');
+                    
+                    if (toggleIcon && folderIcon && subfolderList) {
+                        // 展开
+                        subfolderList.style.display = 'block';
+                        toggleIcon.classList.remove('fa-chevron-right');
+                        toggleIcon.classList.add('fa-chevron-down');
+                        folderIcon.classList.remove('fa-folder');
+                        folderIcon.classList.add('fa-folder-open');
+                    }
+                }
+            }, 100);
         } catch (error) {
             console.error('初始化失败:', error);
             showToast('初始化失败，请刷新页面重试', 'error');
