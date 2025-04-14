@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XNotes - 您的知识管理平台</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- 使用本地Font Awesome -->
+    <link rel="stylesheet" href="/static/fontawesome/fontawesome-free-5.15.4-web/css/all.min.css">
+    <!-- Editor.md CSS -->
+    <link rel="stylesheet" href="/static/editor.md/css/editormd.min.css" />
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧边栏 -->
+        <div class="sidebar">
+            <!-- 侧边栏顶部：标题和新建按钮 -->
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <i class="fas fa-book-open"></i>
+                    <h1>XNotes</h1>
+                </div>
+                <div class="new-note-wrapper">
+                    <button class="new-note-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>新建</span>
+                    </button>
+                    <!-- 创建菜单 -->
+                    <div class="create-menu" id="createMenu">
+                        <div class="create-option" data-type="blank">
+                            <i class="fas fa-file"></i>
+                            <span>空白文档</span>
+                        </div>
+                        <div class="create-option" data-type="markdown">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Markdown</span>
+                        </div>
+                        <div class="create-option" data-type="mindmap">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>脑图</span>
+                        </div>
+                        <div class="create-option" data-type="folder">
+                            <i class="fas fa-folder"></i>
+                            <span>新建文件夹</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 侧边栏导航 -->
+            <ul class="sidebar-nav">
+                <li class="nav-item active">
+                    <i class="fas fa-clock"></i>
+                    <span>最新</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-star"></i>
+                    <span>收藏</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-tasks"></i>
+                    <span>待办</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-trash"></i>
+                    <span>回收站</span>
+                </li>
+            </ul>
+            
+            <!-- 文件夹结构 -->
+            <div class="folder-structure">
+                <h3>我的文件夹</h3>
+                <ul class="folder-list">
+                    <li class="folder-item" data-folder-id="root">
+                        <div class="folder-label">
+                            <i class="fas fa-chevron-right folder-toggle"></i>
+                            <i class="fas fa-folder"></i>
+                            <span>我的文件夹</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 中间文件列表区域 -->
+        <div class="file-list-container">
+            <div class="file-list-header">
+                <div class="file-list-title">笔记列表</div>
+                <div class="file-list-search">
+                    <input type="text" placeholder="搜索笔记..." />
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            <div class="file-list" id="fileList">
+                <!-- 文件列表将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 右侧内容区域 -->
+        <div class="content-area">
+            <div class="content-header">
+                <div class="file-name" id="current-file-name">未命名文档.md</div>
+                <div class="content-actions">
+                    <div class="export-buttons">
+                        <button id="exportPdfButton" class="action-button" title="导出为PDF">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>PDF</span>
+                        </button>
+                        <button id="exportMdButton" class="action-button" title="导出为Markdown">
+                            <i class="fas fa-file-alt"></i>
+                            <span>MD</span>
+                        </button>
+                        <button id="exportHtmlButton" class="action-button" title="导出为HTML">
+                            <i class="fas fa-file-code"></i>
+                            <span>HTML</span>
+                        </button>
+                    </div>
+                    <button id="saveButton" class="action-button primary-action">
+                        <i class="fas fa-save"></i>
+                        <span>保存</span>
+                    </button>
+                </div>
+            </div>
+            <div class="editor-container">
+                <div id="editor">
+                    <!-- 编辑器内容将通过editor.md生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新建文件夹对话框 -->
+    <div id="createFolderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>新建文件夹</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="folderNameInput" placeholder="请输入文件夹名称" autofocus>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelFolderBtn">取消</button>
+                <button id="createFolderBtn" class="primary-btn">新建</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 重命名文件夹对话框 -->
+    <div id="renameFolderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>重命名文件夹</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="newFolderNameInput" placeholder="请输入新的文件夹名称" autofocus>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelRenameBtn">取消</button>
+                <button id="confirmRenameBtn" class="primary-btn">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除确认对话框 -->
+    <div id="deleteFolderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>删除文件夹</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteFolderMessage">确定要删除此文件夹及其所有内容吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelDeleteBtn">取消</button>
+                <button id="confirmDeleteBtn" class="danger-btn">删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 右键菜单 - 文件夹 -->
+    <div class="context-menu" id="folderContextMenu">
+        <div class="menu-item" id="newFolder"> <span>新建文件夹</span> </div>
+        <div class="menu-item" id="newNote"> <span>新建笔记</span> </div>
+        <div class="menu-item" id="renameFolder"> <span>重命名</span> </div>
+        <div class="menu-item" id="moveFolder"> <span>移动到</span> </div>
+        <div class="menu-item" id="deleteFolder"> <span>删除</span> </div>
+    </div>
+    
+    <!-- 右键菜单 - 笔记 -->
+    <div class="context-menu" id="noteContextMenu">
+        <div class="menu-item" id="deleteNote"> <span>删除</span> </div>
+        <div class="menu-item" id="moveNote"> <span>移动到</span> </div>
+    </div>
+    
+    <!-- 笔记移动对话框 -->
+    <div id="moveNoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>移动笔记</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>选择要移动到的目标文件夹：</p>
+                <div id="noteFolderTreeContainer" class="folder-tree-container">
+                    <!-- 文件夹树将在这里动态生成 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmMoveNoteBtn" class="primary-btn">确定</button>
+                <button id="cancelMoveNoteBtn" class="secondary-btn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件夹移动对话框 -->
+    <div id="moveFolderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>移动文件夹</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>选择要移动到的目标文件夹：</p>
+                <div id="folderTreeContainer" class="folder-tree-container">
+                    <!-- 文件夹树将在这里动态生成 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmMoveBtn" class="primary-btn">确定</button>
+                <button id="cancelMoveBtn" class="secondary-btn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入jQuery -->
+    <script src="/static/js/jquery.min.js"></script>
+    <!-- 引入Editor.md -->
+    <script src="/static/editor.md/editormd.min.js"></script>
+    
+    <!-- 通知提示容器 -->
+    <div id="toast-container" class="toast-container"></div>
+    
+    <!-- 应用脚本 -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html> 
